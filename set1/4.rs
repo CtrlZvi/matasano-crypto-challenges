@@ -21,11 +21,10 @@ fn hex2octets(hex: &Vec<u8>) -> Vec<u8> {
     octets
 }
 
-fn fixed_xor(left: &Vec<u8>, right: &Vec<u8>) -> Vec<u8> {
-    assert!(left.len() == right.len());
-    let mut xor : Vec<u8> = Vec::with_capacity(left.len());
-    for i in 0 .. xor.capacity() {
-        xor.push(left[i] ^ right[i])
+fn fixed_xor(input: &Vec<u8>, key: u8) -> Vec<u8> {
+    let mut xor : Vec<u8> = Vec::with_capacity(input.len());
+    for octet in input {
+        xor.push(octet ^ key)
     }
     xor
 }
@@ -38,11 +37,7 @@ fn decrypt_xor(input : &Vec<u8>) -> (u8, f32) {
     let mut xor_delta = std::f32::INFINITY;
 
     for c in 0u8 .. 127u8 {
-        let mut pattern : Vec<u8> =  Vec::with_capacity(input.len());
-        for _ in 0 .. input.len() {
-            pattern.push(c)
-        }
-        let output = fixed_xor(&input, &pattern);
+        let output = fixed_xor(&input, c);
 
         let mut letter_count : Vec<f32> = Vec::with_capacity(letter_frequencies.len());
         for _ in 0 .. letter_frequencies.len() {
@@ -97,11 +92,7 @@ fn main() {
     println!("Delta: {}", best_delta);
 
     let input = hex2octets(&best_line.into_bytes());
-    let mut pattern : Vec<u8> =  Vec::with_capacity(input.len());
-    for _ in 0 .. input.len() {
-        pattern.push(key)
-    }
-    println!("Decrypted: {}", String::from_utf8(fixed_xor(&input, &pattern)).unwrap());
+    println!("Decrypted: {}", String::from_utf8(fixed_xor(&input, key)).unwrap());
 }
 
 #[cfg(test)]

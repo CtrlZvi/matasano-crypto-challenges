@@ -17,30 +17,10 @@ fn hex2octets(hex: &Vec<u8>) -> Vec<u8> {
     octets
 }
 
-fn nibble2hex(nibble : u8) -> Result<u8, ()> {
-    match nibble {
-        0u8 ... 9u8 => Ok(nibble + 0x30u8),
-        10u8 ... 15u8 => Ok(nibble + 0x57u8),
-        _ => Err(()),
-    }
-}
-
-fn octets2hex(octets: Vec<u8>) -> Vec<u8> {
-    let mut hex : Vec<u8> = Vec::with_capacity(octets.len() * 2);
-    for octet in octets {
-        hex.push(nibble2hex((octet & 0xF0u8) >> 4).unwrap());
-        hex.push(nibble2hex(octet & 0x0Fu8).unwrap());
-    }
-    hex
-}
-
-fn fixed_xor(left: &Vec<u8>, right: &Vec<u8>) -> Vec<u8> {
-    assert!(left.len() == right.len());
-    let left_octets = hex2octets(left);
-    let right_octets = hex2octets(right);
-    let mut xor : Vec<u8> = Vec::with_capacity(left_octets.len());
-    for i in 0 .. xor.capacity() {
-        xor.push(left_octets[i] ^ right_octets[i])
+fn fixed_xor(input: &Vec<u8>, key: u8) -> Vec<u8> {
+    let mut xor : Vec<u8> = Vec::with_capacity(input.len());
+    for octet in input {
+        xor.push(octet ^ key)
     }
     xor
 }
@@ -54,11 +34,7 @@ fn main() {
 
     let input = String::from("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736").into_bytes();
     for c in 0u8 .. 127u8 {
-        let mut pattern : Vec<u8> =  Vec::with_capacity(input.len());
-        for _ in 0 .. input.len() / 2 {
-            pattern.push(c)
-        }
-        let output = fixed_xor(&input, &octets2hex(pattern));
+        let output = fixed_xor(&hex2octets(&input), c);
 
         let mut letter_count : Vec<f32> = Vec::with_capacity(letter_frequencies.len());
         for _ in 0 .. letter_frequencies.len() {
@@ -84,11 +60,7 @@ fn main() {
         }
     }
 
-    let mut pattern : Vec<u8> =  Vec::with_capacity(input.len());
-    for _ in 0 .. input.len() / 2 {
-        pattern.push(xor_character)
-    }
-    let output = fixed_xor(&input, &octets2hex(pattern));
+    let output = fixed_xor(&hex2octets(&input), xor_character);
     println!("Character: {}", xor_character);
     println!("Delta: {}", xor_delta);
     println!("String: {}", String::from_utf8(output).unwrap());
