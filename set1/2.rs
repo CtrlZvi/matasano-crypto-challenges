@@ -20,7 +20,7 @@ fn hex2octets(hex: Vec<u8>) -> Vec<u8> {
 fn nibble2hex(nibble : u8) -> Result<u8, ()> {
     match nibble {
         0u8 ... 9u8 => Ok(nibble + 0x30u8),
-        10u8 ... 15u8 => Ok(nibble + 0x61u8),
+        10u8 ... 15u8 => Ok(nibble + 0x57u8),
         _ => Err(()),
     }
 }
@@ -29,7 +29,7 @@ fn octets2hex(octets: Vec<u8>) -> Vec<u8> {
     let mut hex : Vec<u8> = Vec::with_capacity(octets.len() * 2);
     for octet in octets {
         hex.push(nibble2hex((octet & 0xF0u8) >> 4).unwrap());
-        hex.push(nibble2hex(octet & 0xFu8).unwrap());
+        hex.push(nibble2hex(octet & 0x0Fu8).unwrap());
     }
     hex
 }
