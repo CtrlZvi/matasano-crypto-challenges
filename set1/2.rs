@@ -6,7 +6,7 @@ fn hex2nibble(hex : u8) -> Result<u8, ()> {
     }
 }
 
-fn hex2octets(hex: Vec<u8>) -> Vec<u8> {
+fn hex2octets(hex: &[u8]) -> Vec<u8> {
     let mut octets : Vec<u8> = Vec::with_capacity(&hex.len() / 2 + &hex.len() % 2);
     if hex.len() % 2 == 1 {
         octets.push(hex2nibble(hex[0]).unwrap())
@@ -25,7 +25,7 @@ fn nibble2hex(nibble : u8) -> Result<u8, ()> {
     }
 }
 
-fn octets2hex(octets: Vec<u8>) -> Vec<u8> {
+fn octets2hex(octets: &[u8]) -> Vec<u8> {
     let mut hex : Vec<u8> = Vec::with_capacity(octets.len() * 2);
     for octet in octets {
         hex.push(nibble2hex((octet & 0xF0u8) >> 4).unwrap());
@@ -34,7 +34,7 @@ fn octets2hex(octets: Vec<u8>) -> Vec<u8> {
     hex
 }
 
-fn fixed_xor(left: Vec<u8>, right: Vec<u8>) -> Vec<u8> {
+fn fixed_xor(left: &[u8], right: &[u8]) -> Vec<u8> {
     assert!(left.len() == right.len());
     let left_octets = hex2octets(left);
     let right_octets = hex2octets(right);
@@ -48,5 +48,5 @@ fn fixed_xor(left: Vec<u8>, right: Vec<u8>) -> Vec<u8> {
 fn main() {
     let left = String::from("1c0111001f010100061a024b53535009181c").into_bytes();
     let right = String::from("686974207468652062756c6c277320657965").into_bytes();
-    println!("{}", String::from_utf8(octets2hex(fixed_xor(left, right))).unwrap());
+    println!("{}", String::from_utf8(octets2hex(&fixed_xor(&left, &right))).unwrap());
 }

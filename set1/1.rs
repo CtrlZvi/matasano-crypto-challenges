@@ -17,7 +17,7 @@ fn hex2octets(hex: Vec<u8>) -> Vec<u8> {
     octets
 }
 
-fn octets2base64(octets: Vec<u8>) -> Vec<u8> {
+fn octets2base64(octets: &[u8]) -> Vec<u8> {
     let mut base64 : Vec<u8> = Vec::with_capacity(4 * (octets.len() / 3 + match octets.len() {
         0 => 0,
         _ => 1
@@ -45,7 +45,7 @@ fn octets2base64(octets: Vec<u8>) -> Vec<u8> {
 }
 
 fn hex2base64(hex: Vec<u8>) -> Vec<u8> {
-    octets2base64(hex2octets(hex))
+    octets2base64(&hex2octets(hex))
 }
 
 #[cfg(test)]
@@ -90,11 +90,10 @@ mod tests {
 
     #[test]
     fn test_octets2base64() {
-        assert!(::octets2base64(vec![0u8]) == vec!['A' as u8, 'A' as u8, '=' as u8, '=' as u8]);
-        assert!(::octets2base64(vec![128u8]).len() == 4);
-        assert!(::octets2base64(vec![128u8]) == vec!['g' as u8, 'A' as u8, '=' as u8, '=' as u8]);
-        assert!(::octets2base64(vec![0u8, 0u8]) == vec!['A' as u8, 'A' as u8, 'A' as u8, '=' as u8]);
-        assert!(::octets2base64(vec![1u8, 35u8, 69u8]) == vec!['A' as u8, 'A' as u8, 'A' as u8, 'A' as u8]);
+        assert!(::octets2base64(&vec![0u8]) == vec!['A' as u8, 'A' as u8, '=' as u8, '=' as u8]);
+        assert!(::octets2base64(&vec![128u8]).len() == 4);
+        assert!(::octets2base64(&vec![128u8]) == vec!['g' as u8, 'A' as u8, '=' as u8, '=' as u8]);
+        assert!(::octets2base64(&vec![0u8, 0u8]) == vec!['A' as u8, 'A' as u8, 'A' as u8, '=' as u8]);
 
     }
 }

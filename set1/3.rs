@@ -17,7 +17,7 @@ fn hex2octets(hex: &Vec<u8>) -> Vec<u8> {
     octets
 }
 
-fn fixed_xor(input: &Vec<u8>, key: u8) -> Vec<u8> {
+fn fixed_xor(input: &[u8], key: u8) -> Vec<u8> {
     let mut xor : Vec<u8> = Vec::with_capacity(input.len());
     for octet in input {
         xor.push(octet ^ key)
@@ -69,11 +69,28 @@ fn main() {
 #[cfg(test)]
 mod tests {
 
+    fn nibble2hex(nibble : u8) -> Result<u8, ()> {
+       match nibble {
+            0u8 ... 9u8 => Ok(nibble + 0x30u8),
+            10u8 ... 15u8 => Ok(nibble + 0x57u8),
+            _ => Err(()),
+        }
+    }
+
+    fn octets2hex(octets: &[u8]) -> Vec<u8> {
+       let mut hex : Vec<u8> = Vec::with_capacity(octets.len() * 2);
+        for octet in octets {
+            hex.push(nibble2hex((octet & 0xF0u8) >> 4).unwrap());
+            hex.push(nibble2hex(octet & 0x0Fu8).unwrap());
+        }
+        hex
+    }
+
     #[test]
     fn test_octets2hex() {
-        let hex = ::octets2hex(vec![10u8]);
+        let hex = octets2hex(&vec![10u8]);
         assert!(hex.len() == 2);
         println!("{}, {}", hex[0], hex[1]);
-        assert!(::octets2hex(vec![10u8]) == vec!['0' as u8, 'a' as u8]);
+        assert!(octets2hex(&vec![10u8]) == vec!['0' as u8, 'a' as u8]);
     }
 }

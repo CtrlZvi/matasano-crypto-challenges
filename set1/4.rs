@@ -21,7 +21,7 @@ fn hex2octets(hex: &Vec<u8>) -> Vec<u8> {
     octets
 }
 
-fn fixed_xor(input: &Vec<u8>, key: u8) -> Vec<u8> {
+fn fixed_xor(input: &[u8], key: u8) -> Vec<u8> {
     let mut xor : Vec<u8> = Vec::with_capacity(input.len());
     for octet in input {
         xor.push(octet ^ key)
@@ -63,11 +63,6 @@ fn decrypt_xor(input : &Vec<u8>) -> (u8, f32) {
         }
     }
 
-    let mut pattern : Vec<u8> =  Vec::with_capacity(input.len());
-    for _ in 0 .. input.len() {
-        pattern.push(xor_character)
-    }
-
     (xor_character, xor_delta)
 }
 
@@ -97,12 +92,4 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-
-    #[test]
-    fn test_octets2hex() {
-        let hex = ::octets2hex(vec![10u8]);
-        assert!(hex.len() == 2);
-        println!("{}, {}", hex[0], hex[1]);
-        assert!(::octets2hex(vec![10u8]) == vec!['0' as u8, 'a' as u8]);
-    }
 }
